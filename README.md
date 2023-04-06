@@ -1,6 +1,7 @@
 Demo link: https://www.loom.com/share/af389a94934b42d6b99b191ae7f527fc
 
-Сouldn't fulfill the requirement with the opening of the popup because openpopup isn't available in the current version of chrome 
+When you install the extension, it opens a new window with a welcome message instead of an openPopup, because the current version of chrome does not support action.openPopup
+
 
 
 ## Events
