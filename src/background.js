@@ -1,21 +1,35 @@
-'use strict';
+class Secret {
+  constructor() {
+    this.secret = '';
+  }
 
-// With background scripts you can communicate with popup
-// and contentScript files.
-// For more information on background script,
-// See https://developer.chrome.com/extensions/background_pages
+  generateSecret() {
+    this.setSecret((Math.random() + 1).toString(36).substring(7));
+  }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'GREETINGS') {
-    const message = `Hi ${
-      sender.tab ? 'Con' : 'Pop'
-    }, my name is Bac. I am from Background. It's great to hear from you.`;
+  setSecret(secret) {
+    this.secret = secret;
+  }
+}
+const SecretController = new Secret();
 
-    // Log message coming from the `request` parameter
-    console.log(request.payload.message);
-    // Send a response message
-    sendResponse({
-      message,
+chrome.runtime.onStartup.addListener(() => {
+  SecretController.generateSecret();
+});
+
+chrome.runtime.onInstalled.addListener((details) => {
+  SecretController.generateSecret();
+
+  if (details.reason == 'install') {
+    chrome.tabs.create({
+      url: 'browserPages/greeting.html',
     });
   }
+});
+
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
+  if (request.type === 'regenerate') {
+    SecretController.generateSecret();
+  }
+  sendResponse(SecretController.secret);
 });
